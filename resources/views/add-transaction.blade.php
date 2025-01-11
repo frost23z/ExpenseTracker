@@ -9,13 +9,14 @@
                         <div class="mb-4">
                             <label for="type" class="block text-gray-700">Type</label>
                             <select name="type" id="type" class="w-full px-4 py-2 border rounded" required>
-                                <option value="expense">Expense</option>
+                                <option value="expense">Expense</option>    
                                 <option value="income">Income</option>
                             </select>
                         </div>
                         <div class="mb-4">
                             <label for="category_id" class="block text-gray-700">Category</label>
                             <select name="category_id" id="category_id" class="w-full px-4 py-2 border rounded" required>
+                                <option value="" disabled selected>Choose Category</option>
                                 @foreach($categories as $category)
                                     <option value="{{ $category->id }}" data-type="{{ $category->type }}">{{ $category->name }}</option>
                                 @endforeach
@@ -43,14 +44,14 @@
     </div>
     <script>
         document.getElementById('type').addEventListener('change', function() {
-            var type = this.value;
+            var selectedType = this.value;
             var categorySelect = document.getElementById('category_id');
-            var options = categorySelect.querySelectorAll('option');
-            options.forEach(function(option) {
-                option.style.display = option.getAttribute('data-type') === type ? 'block' : 'none';
-            });
+            var options = categorySelect.options;
+            for (var i = 0; i < options.length; i++) {
+                var option = options[i];
+                option.style.display = option.getAttribute('data-type') === selectedType ? 'block' : 'none';
+            }
             categorySelect.value = '';
         });
-        document.getElementById('type').dispatchEvent(new Event('change'));
     </script>
 </x-app-layout>

@@ -12,9 +12,11 @@ class TransactionController extends Controller
     {
         $type = $request->query('type', 'all');
         if ($type === 'all') {
-            $transactions = Transaction::all();
+            $transactions = Transaction::with('category')->get();
         } else {
-            $transactions = Transaction::where('type', $type)->get();
+            $transactions = Transaction::whereHas('category', function ($query) use ($type) {
+                $query->where('type', $type);
+            })->with('category')->get();
         }
         return response()->json($transactions);
     }
@@ -32,7 +34,6 @@ class TransactionController extends Controller
             'amount' => 'required|numeric',
             'description' => 'nullable|string',
             'transaction_date' => 'required|date',
-            'type' => 'required|in:income,expense',
         ]);
 
         $validatedData['user_id'] = auth()->id(); // Automatically set the user ID
@@ -54,7 +55,6 @@ class TransactionController extends Controller
             'amount' => 'required|numeric',
             'description' => 'nullable|string',
             'transaction_date' => 'required|date',
-            'type' => 'required|in:income,expense',
         ]);
 
         $transaction->update($validatedData);
@@ -71,7 +71,9 @@ class TransactionController extends Controller
     {
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
-        $query = Transaction::query()->where('type', 'expense');
+        $query = Transaction::query()->whereHas('category', function ($query) {
+            $query->where('type', 'expense');
+        });
 
         if ($startDate) {
             $query->whereDate('transaction_date', '>=', $startDate);
