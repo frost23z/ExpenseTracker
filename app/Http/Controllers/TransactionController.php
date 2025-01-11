@@ -12,11 +12,11 @@ class TransactionController extends Controller
     {
         $type = $request->query('type', 'all');
         if ($type === 'all') {
-            $transactions = Transaction::with('category')->get();
+            $transactions = Transaction::with('category')->orderBy('transaction_date', 'desc')->get();
         } else {
             $transactions = Transaction::whereHas('category', function ($query) use ($type) {
                 $query->where('type', $type);
-            })->with('category')->get();
+            })->with('category')->orderBy('transaction_date', 'desc')->get();
         }
         return response()->json($transactions);
     }
