@@ -13,8 +13,11 @@
                             <input type="date" id="end-date" class="px-4 py-2 border rounded" />
                             <button onclick="loadSummary()" class="px-4 py-2 bg-blue-500 text-white rounded">Show</button>
                         </div>
-                        <div id="summary-chart" class="max-w-xl mx-auto">
-                            <!-- Summary chart will be loaded here -->
+                        <div id="summary-chart-expense" class="max-w-xl mx-auto">
+                            <!-- Expense summary chart will be loaded here -->
+                        </div>
+                        <div id="summary-chart-income" class="max-w-xl mx-auto">
+                            <!-- Income summary chart will be loaded here -->
                         </div>
                     </div>
                 </div>
@@ -58,31 +61,43 @@
         function loadSummary() {
             const startDate = document.getElementById('start-date').value;
             const endDate = document.getElementById('end-date').value;
-            const query = new URLSearchParams({ start_date: startDate, end_date: endDate, type: 'expense' }).toString();
+            const expenseQuery = new URLSearchParams({ start_date: startDate, end_date: endDate, type: 'expense' }).toString();
+            const incomeQuery = new URLSearchParams({ start_date: startDate, end_date: endDate, type: 'income' }).toString();
 
-            fetch(`/summary?${query}`)
+            fetch(`/summary?${expenseQuery}`)
                 .then(response => response.json())
                 .then(data => {
-                    const summaryChartDiv = document.getElementById('summary-chart');
+                    const summaryChartDiv = document.getElementById('summary-chart-expense');
                     if (data.length === 0) {
-                        summaryChartDiv.innerHTML = '<p class="text-center text-gray-500">No data available.</p>';
+                        summaryChartDiv.innerHTML = '<p class="text-center text-gray-500">No expense data available.</p>';
                     } else {
-                        renderChart(data);
+                        renderChart(data, 'summary-chart-expense');
+                    }
+                });
+
+            fetch(`/summary?${incomeQuery}`)
+                .then(response => response.json())
+                .then(data => {
+                    const summaryChartDiv = document.getElementById('summary-chart-income');
+                    if (data.length === 0) {
+                        summaryChartDiv.innerHTML = '<p class="text-center text-gray-500">No income data available.</p>';
+                    } else {
+                        renderChart(data, 'summary-chart-income', false);
                     }
                 });
         }
 
-        function renderChart(data) {
+        function renderChart(data, chartId, limitToTop10 = true) {
             const ctx = document.createElement('canvas');
-            document.getElementById('summary-chart').innerHTML = '';
-            document.getElementById('summary-chart').appendChild(ctx);
+            document.getElementById(chartId).innerHTML = '';
+            document.getElementById(chartId).appendChild(ctx);
 
-            const topCategories = data.slice(0, 10);
-            const otherCategories = data.slice(10);
+            const topCategories = limitToTop10 ? data.slice(0, 10) : data;
+            const otherCategories = limitToTop10 ? data.slice(10) : [];
             const otherTotal = otherCategories.reduce((sum, item) => sum + item.total, 0);
 
-            const labels = topCategories.map(item => item.category).concat('Others');
-            const percentages = topCategories.map(item => item.percentage.toFixed(2)).concat((otherTotal / data.reduce((sum, item) => sum + item.total, 0) * 100).toFixed(2));
+            const labels = topCategories.map(item => item.category).concat(limitToTop10 && otherTotal > 0 ? 'Others' : []);
+            const percentages = topCategories.map(item => item.percentage.toFixed(2)).concat(limitToTop10 && otherTotal > 0 ? (otherTotal / data.reduce((sum, item) => sum + item.total, 0) * 100).toFixed(2) : []);
 
             new Chart(ctx, {
                 type: 'pie',

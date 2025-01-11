@@ -71,8 +71,9 @@ class TransactionController extends Controller
     {
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
-        $query = Transaction::query()->whereHas('category', function ($query) {
-            $query->where('type', 'expense');
+        $type = $request->query('type', 'expense');
+        $query = Transaction::query()->whereHas('category', function ($query) use ($type) {
+            $query->where('type', $type);
         });
 
         if ($startDate) {
@@ -97,18 +98,22 @@ class TransactionController extends Controller
                              ];
                          });
 
-        $topCategories = $summary->take(10);
-        $otherCategories = $summary->slice(10);
-        $otherTotal = $otherCategories->sum('total');
+        if ($type === 'expense') {
+            $topCategories = $summary->take(10);
+            $otherCategories = $summary->slice(10);
+            $otherTotal = $otherCategories->sum('total');
 
-        if ($otherTotal > 0) {
-            $topCategories->push([
-                'category' => 'Others',
-                'total' => $otherTotal,
-                'percentage' => $totalAmount > 0 ? ($otherTotal / $totalAmount) * 100 : 0
-            ]);
+            if ($otherTotal > 0) {
+                $topCategories->push([
+                    'category' => 'Others',
+                    'total' => $otherTotal,
+                    'percentage' => $totalAmount > 0 ? ($otherTotal / $totalAmount) * 100 : 0
+                ]);
+            }
+
+            return response()->json($topCategories);
+        } else {
+            return response()->json($summary);
         }
-
-        return response()->json($topCategories);
     }
 }
