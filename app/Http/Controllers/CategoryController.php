@@ -18,11 +18,7 @@ class CategoryController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'type' => 'required|in:income,expense',
-            'is_custom' => 'boolean',
         ]);
-
-        // Ensure 'is_custom' is true for user-created categories
-        $validatedData['is_custom'] = true;
 
         $category = Category::create($validatedData);
         return response()->json($category, 201);
@@ -38,7 +34,6 @@ class CategoryController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'type' => 'required|in:income,expense',
-            'is_custom' => 'boolean',
         ]);
 
         $category->update($validatedData);
