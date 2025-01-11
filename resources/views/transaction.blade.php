@@ -32,17 +32,17 @@
                         transactionsDiv.innerHTML = `
                             <table class="min-w-full bg-white">
                                 <thead>
-                                    <tr>
+                                    <tr class="bg-gray-500 text-white">
                                         <th class="py-2 text-center">Type</th>
-                                        <th class="py-2">Description</th>
-                                        <th class="py-2 text-right">Amount</th>
+                                        <th class="py-2 text-center">Description</th>
+                                        <th class="py-2 text-center">Amount</th>
                                         <th class="py-2 text-center">Date</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     ${data.map(transaction => `
                                         <tr>
-                                            <td class="border px-4 py-2 text-center">${transaction.type}</td>
+                                            <td class="border px-4 py-2 text-center">${transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)}</td>
                                             <td class="border px-4 py-2">${transaction.description}</td>
                                             <td class="border px-4 py-2 text-right">$${transaction.amount}</td>
                                             <td class="border px-4 py-2 text-center">${transaction.transaction_date}</td>
