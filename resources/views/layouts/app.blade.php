@@ -22,6 +22,13 @@
             <main>
                 {{ $slot }}
             </main>
+
+            <!-- Floating Action Button -->
+            <a href="{{ route('transactions.create') }}" class="fixed bottom-20 right-20 bg-blue-500 text-white p-5 rounded-full shadow-lg hover:bg-blue-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+            </a>
         </div>
     </body>
 </html>

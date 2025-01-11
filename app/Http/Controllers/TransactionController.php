@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transaction;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
@@ -18,10 +19,15 @@ class TransactionController extends Controller
         return response()->json($transactions);
     }
 
+    public function create()
+    {
+        $categories = Category::all();
+        return view('add-transaction', compact('categories'));
+    }
+
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'user_id' => 'required|exists:users,id',
             'category_id' => 'nullable|exists:categories,id',
             'amount' => 'required|numeric',
             'description' => 'nullable|string',
@@ -29,8 +35,10 @@ class TransactionController extends Controller
             'type' => 'required|in:income,expense',
         ]);
 
+        $validatedData['user_id'] = auth()->id(); // Automatically set the user ID
+
         $transaction = Transaction::create($validatedData);
-        return response()->json($transaction, 201);
+        return redirect()->route('transaction')->with('success', 'Transaction added successfully.');
     }
 
     public function show(Transaction $transaction)

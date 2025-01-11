@@ -17,6 +17,8 @@ Route::get('/transaction', function () {
 })->middleware(['auth', 'verified'])->name('transaction');
 
 Route::get('/transactions', [TransactionController::class, 'index'])->middleware(['auth', 'verified']);
+Route::get('/transactions/create', [TransactionController::class, 'create'])->middleware(['auth', 'verified'])->name('transactions.create');
+Route::post('/transactions', [TransactionController::class, 'store'])->middleware(['auth', 'verified'])->name('transactions.store');
 
 Route::get('/summary', [TransactionController::class, 'summary'])->middleware(['auth', 'verified']);
 
