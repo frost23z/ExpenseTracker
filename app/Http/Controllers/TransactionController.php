@@ -7,9 +7,14 @@ use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $transactions = Transaction::all();
+        $type = $request->query('type', 'all');
+        if ($type === 'all') {
+            $transactions = Transaction::all();
+        } else {
+            $transactions = Transaction::where('type', $type)->get();
+        }
         return response()->json($transactions);
     }
 

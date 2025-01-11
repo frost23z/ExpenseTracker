@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -14,6 +15,8 @@ Route::get('/dashboard', function () {
 Route::get('/transaction', function () {
     return view('transaction');
 })->middleware(['auth', 'verified'])->name('transaction');
+
+Route::get('/transactions', [TransactionController::class, 'index'])->middleware(['auth', 'verified']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
