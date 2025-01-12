@@ -42,19 +42,24 @@ A modern expense tracking application built with Laravel that helps you manage y
 
 4. Configure your database in `.env` file
 
-5. Run migrations
+5. Run 'db:seed' to seed the database
+    ```bash
+    php artisan db:seed
+    ```
+
+6. Run migrations
     ```bash
     php artisan migrate
     ```
 
-6. Build assets
+7. Build assets
     ```bash
     npm run build
     ```
 
-7. Start the development server
+8. Start the development server
     ```bash
-    php artisan serve
+    composer run dev
     ```
 
 ## 🔧 Configuration
